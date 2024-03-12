@@ -1,7 +1,7 @@
 import { AiOutlineLoading } from 'react-icons/ai';
 import { IoIosCloseCircleOutline, IoIosMenu } from 'react-icons/io';
 import { RiSignalWifiErrorFill } from 'react-icons/ri';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
@@ -29,20 +29,52 @@ export function CustomButton() {
   return <></>;
 }
 
-export function Character() {
+export function Character({ char }) {
+  return (
+    <div className={'flex gap-2 flex-col items-center mx-4 p-1' + ' ' + (char?.found && 'opacity-25')}>
+      <div className="h-20">
+        <img src={char.link} alt={char.name + ' picture.'} className="block h-full" />
+      </div>
+      <div className="capitalize font-bold">{char.name}</div>
+    </div>
+  );
+}
+
+export function GameResult({ name, firstFound, secondFound, playTime, playedAt, afk }) {
   return <></>;
 }
 
-export function GameResult() {
+export function Dropdown({ position }) {
   return <></>;
 }
 
-export function Dropdown() {
+export function DropdownButton({ name }) {
   return <></>;
 }
 
-export function DropdownButton() {
-  return <></>;
+export function Timer({ startTime }) {
+  // current unix time
+  const [now, setNow] = useState(0);
+
+  // reference of setInterval
+  const intervalRef = useRef(null);
+
+  // millisec / frame = milliseconds that need when a frame re-new
+  const frame = 1000 / 60;
+
+  // call this when Timer start rendering
+  function start() {
+    intervalRef.current = setInterval(() => {
+      // set current unix time after each frame time
+      setNow(Date.now());
+    }, frame);
+  }
+
+  // call start when render
+  useEffect(() => start(), []);
+
+  // calculate to seconds
+  return <div className="font-bold text-xl p-4">Timer: {(now - startTime) / 1000}</div>;
 }
 
 export function Footer() {
