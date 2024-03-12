@@ -16,28 +16,25 @@ export default function Play() {
   const [gameId] = useState(uuid());
   const [startTime] = useState(new Date().getTime());
 
+  // whether image being focused
+  const [isClicked, setIsClicked] = useState(false);
+
   // position of cursor over Playground
   const playgroundRef = useRef(null);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   useEffect(() => {
-    console.log(playgroundRef.current);
-
     if (playgroundRef.current) playgroundRef.current.addEventListener('click', handleClick);
 
     function handleClick(e) {
-      console.log(e);
-
+      // x of click - x of picture
       const pxFromLeft = e.x - e.target.x;
       const pxFromTop = e.y - e.target.y;
-      console.log(pxFromLeft, pxFromTop);
 
       const percentFromLeft = Math.floor((pxFromLeft / e.target.width) * 100);
       const percentFromTop = Math.floor((pxFromTop / e.target.height) * 100);
 
       setPosition({ x: percentFromLeft, y: percentFromTop });
     }
-
-    // return ()=>playgroundRef.current.removeEventListener('click', handleClick);
   }, []);
 
   // default 3 characters
@@ -63,25 +60,37 @@ export default function Play() {
     // tmp();
   }, [startTime, gameId]);
 
+  // odlaw's head 10% - 35%
+  // wizard's head 26% - 34%
+  // waldo's head 61% - 37%
+
+  useEffect(() => {
+    if (playgroundRef.current) {
+      // console.log('focused');
+      console.log(playgroundRef.current);
+    }
+  }, []);
+
   return (
     <section className="">
       {/* header game play to display info */}
       <header className="flex gap-2 justify-between items-center p-3">
         <div className="flex-1">
+          {/* counter */}
           <Timer startTime={startTime} />
+
+          {/* display click position */}
+          <div className="p-4 font-bold text-lg">
+            x:{position.x}% | y: {position.y}%
+          </div>
         </div>
         {characters.map((char, i) => (
           <Character char={char} key={i} />
         ))}
       </header>
 
-      {/* display click position */}
-      <div className="">
-        x:{position.x}% | y: {position.y}%
-      </div>
-
-      {/* gameboard */}
-      <article className="aspect-16/9 bg-danger border-link border-8">
+      {/* gameboard min width 1000px so user can see */}
+      <article className="aspect-16/9 min-w-[1000px] bg-danger border-link border-8">
         <img ref={playgroundRef} src={Playground} alt="Many people at the beach" className="block w-full cursor-crosshair" />
       </article>
     </section>
