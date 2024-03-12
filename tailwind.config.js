@@ -15,6 +15,9 @@ export default {
         warn: '#eab308',
         success: '#22c55e',
       },
+      spacing: {
+        wally: '42.5%',
+      },
       aspectRatio: {
         '2/3': '2 / 3',
         '3/2': '3 / 2',
