@@ -4,8 +4,6 @@ import { matchSorter } from 'match-sorter';
 import axios from 'axios';
 import { Loading, Error } from './../components';
 
-import { markdownParser, domParser } from '../methods';
-
 export default function Blog() {
   // sticky search header
   const [isSticky, setIsSticky] = useState(false);

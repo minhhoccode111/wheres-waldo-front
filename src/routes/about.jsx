@@ -5,6 +5,7 @@ export default function About() {
         <h2 className="text-4xl font-bold">About</h2>
       </header>
       <article className="flex flex-col gap-3 py-4">
+        <p className="">To win this game you have to find 3 hidden characters.</p>
         <p className="">
           <a href="https://github.com/minhhoccode111/personal-portfolio" target="_blank" rel="noopener" className="text-link underline decoration-dotted hover:decoration-solid">
             Project

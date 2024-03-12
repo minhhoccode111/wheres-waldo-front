@@ -16,7 +16,7 @@ export default function Layout() {
       </main>
 
       {/* footer part */}
-      {pathname !== '/' && <Footer />}
+      {pathname !== '/' && pathname !== '/play' && <Footer />}
     </>
   );
 }
