@@ -27,8 +27,9 @@ export default function Play() {
     function handleClick(e) {
       console.log(e);
 
-      const pxFromLeft = e.x - e.target.offsetLeft;
-      const pxFromTop = e.y - e.target.offsetTop;
+      const pxFromLeft = e.x - e.target.x;
+      const pxFromTop = e.y - e.target.y;
+      console.log(pxFromLeft, pxFromTop);
 
       const percentFromLeft = Math.floor((pxFromLeft / e.target.width) * 100);
       const percentFromTop = Math.floor((pxFromTop / e.target.height) * 100);
