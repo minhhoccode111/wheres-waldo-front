@@ -52,12 +52,15 @@ export function DropdownButton({ name }) {
   return <></>;
 }
 
-export function Timer({ startTime }) {
+export function Timer({ startTime, timePlay }) {
   // current unix time
   const [now, setNow] = useState(0);
 
   // reference of setInterval
   const intervalRef = useRef(null);
+
+  // if endTime exists stop watch
+  if (timePlay) return <div className="font-bold text-xl p-4">Timer: {timePlay}s</div>;
 
   // millisec / frame = milliseconds that need when a frame re-new
   const frame = 1000 / 60;

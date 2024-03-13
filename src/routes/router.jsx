@@ -3,7 +3,7 @@ import NotFound from './404';
 import Layout from './layout';
 import Index from './index';
 import Score from './score';
-import Play from './play';
+import Game from './game';
 import About from './about';
 
 export default function Router() {
@@ -27,8 +27,8 @@ export default function Router() {
         },
 
         {
-          path: 'play',
-          element: <Play />,
+          path: 'game',
+          element: <Game />,
           errorElement: <NotFound />,
         },
 

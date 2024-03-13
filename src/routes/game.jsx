@@ -12,13 +12,14 @@ function CharacterFac(name, link, found = false) {
   return { name, link, found };
 }
 
-export default function Play() {
+export default function Game() {
   // navigate after submit user's name
   const navigate = useNavigate();
 
   // create each new game
   const [gameId] = useState(uuid());
   const [startTime] = useState(new Date().getTime());
+  const [timePlay, setTimePlay] = useState(0);
 
   // whether popup show
   const [isPopup, setIsPopup] = useState(false);
@@ -120,7 +121,7 @@ export default function Play() {
       <header className="flex gap-2 justify-between items-center p-3">
         <div className="flex-1">
           {/* counter */}
-          <Timer startTime={startTime} />
+          <Timer startTime={startTime} timePlay={timePlay} />
 
           {/* display click position */}
           <div className="p-4 font-bold text-lg">
@@ -136,13 +137,28 @@ export default function Play() {
       </header>
 
       {characters.every((c) => c.found) && (
-        <div className="fix top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72">
-          <form className="">
-            <label>
-              <span className="">Enter your name: </span>
-              <input type="text" id="username" />
+        <div className="fixed z-50 top-0 left-0 h-full w-full bg-[#77777799] flex flex-col gap-4 justify-center items-center">
+          <h2 className="text-4xl font-bold text-white">You win!</h2>
+          <h2 className="text-4xl font-bold text-white">Enter Your Name</h2>
+          <form className="p-4 rounded-lg bg-white flex gap-2 items-center justify-between">
+            <label
+              htmlFor="search-input"
+              className="relative block rounded-md sm:rounded-lg border border-gray-200 shadow-sm focus-within:border-sky-500 focus-within:ring-1 focus-within:ring-sky-500"
+            >
+              <input
+                id="search-input"
+                className="peer border-none bg-transparent placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 px-2 py-1 sm:px-3 sm:py-1.5 md:px-4 md:py-2 sm:text-lg"
+                placeholder="Search for..."
+                type="text"
+                name="q"
+              />
+
+              <span className="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-white p-0.5 text-xs text-gray-700 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:-top-1 peer-focus:text-xs peer-focus:sm:text-sm">
+                Search
+              </span>
             </label>
-            <button type="submit" className="">
+
+            <button type="submit" className="ripper p-2">
               Submit
             </button>
           </form>
@@ -150,7 +166,7 @@ export default function Play() {
       )}
 
       {/* gameboard min width 1000px so user can see */}
-      <article className="aspect-16/9 min-w-[1000px] bg-link border-link border-8 rounded-3xl relative">
+      <article className="aspect-16/9 bg-link border-link border-8 rounded-3xl relative">
         <img ref={playgroundRef} src={Playground} alt="Many people at the beach" className="block w-full cursor-crosshair rounded-xl" />
         <div
           // have to use inline style because arbitrary dynamic position don't work in tailwind
