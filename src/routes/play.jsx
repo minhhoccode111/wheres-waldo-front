@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { v4 as uuid } from 'uuid';
 import { Timer, Character } from './../components';
 import axios from 'axios';
@@ -12,12 +13,18 @@ function CharacterFac(name, link, found = false) {
 }
 
 export default function Play() {
+  // navigate after submit user's name
+  const navigate = useNavigate();
+
   // create each new game
   const [gameId] = useState(uuid());
   const [startTime] = useState(new Date().getTime());
 
   // whether popup show
   const [isPopup, setIsPopup] = useState(false);
+
+  // a message to display to user
+  const [message, setMessage] = useState('');
 
   // position of cursor over Playground
   const playgroundRef = useRef(null);
@@ -36,8 +43,7 @@ export default function Play() {
 
       setPosition({ x: percentFromLeft, y: percentFromTop });
 
-      // reverse each click on playground
-      setIsPopup((current) => !current);
+      setIsPopup(true);
     }
   }, []);
 
@@ -50,14 +56,20 @@ export default function Play() {
 
   useEffect(() => {
     async function tmp() {
-      await axios({
-        method: 'post',
-        url: import.meta.env.VITE_API_ORIGIN + '/game',
-        data: {
-          startTime, // mark starting time
-          gameId, // mark uniqueness of this game
-        },
-      });
+      try {
+        const res = await axios({
+          method: 'post',
+          url: import.meta.env.VITE_API_ORIGIN + '/game',
+          data: {
+            startTime, // mark starting time
+            gameId, // mark uniqueness of this game
+          },
+        });
+
+        console.log(res);
+      } catch (err) {
+        // setMessage('Some errors')
+      }
     }
 
     // fetch axios to mark this game starting time and uuid
@@ -68,9 +80,39 @@ export default function Play() {
   // wizard's head 26% - 34%
   // waldo's head 61% - 37%
 
-  useEffect(() => {
-    //
-  }, []);
+  async function handleSelectCharacter(e) {
+    setIsPopup(false);
+
+    // console.log(e.target.textContent);
+    console.log({
+      method: 'put',
+      url: import.meta.env.VITE_API_ORIGIN + '/game',
+      data: {
+        startTime,
+        gameId,
+        position,
+        name: e.target.value,
+      },
+    });
+    return;
+
+    // hide to stop user from spamming
+
+    try {
+      const res = await axios({
+        method: 'post',
+        url: import.meta.env.VITE_API_ORIGIN + '/game',
+        data: {
+          startTime,
+          gameId,
+          position,
+          name: e.target.value,
+        },
+      });
+    } catch (err) {
+      // setMessage('Some errors')
+    }
+  }
 
   return (
     <section className="">
@@ -85,10 +127,27 @@ export default function Play() {
             x: {position.x}% | y: {position.y}%
           </div>
         </div>
+
+        <div className="">{message}</div>
+
         {characters.map((char, i) => (
           <Character char={char} key={i} />
         ))}
       </header>
+
+      {characters.every((c) => c.found) && (
+        <div className="fix top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72">
+          <form className="">
+            <label>
+              <span className="">Enter your name: </span>
+              <input type="text" id="username" />
+            </label>
+            <button type="submit" className="">
+              Submit
+            </button>
+          </form>
+        </div>
+      )}
 
       {/* gameboard min width 1000px so user can see */}
       <article className="aspect-16/9 min-w-[1000px] bg-link border-link border-8 rounded-3xl relative">
@@ -99,9 +158,15 @@ export default function Play() {
           className={'flex-col gap-2 rounded-lg h-36 w-24 absolute z-10 bg-danger p-2 capitalize font-bold' + (isPopup ? ' flex' : ' hidden')}
         >
           <p className="text-center text-white">Select:</p>
-          <button className="ripper capitalize">waldo</button>
-          <button className="ripper capitalize">wizard</button>
-          <button className="ripper capitalize">odlaw</button>
+          <button value={'waldo'} onClick={handleSelectCharacter} className="ripper capitalize">
+            waldo
+          </button>
+          <button value={'wizard'} onClick={handleSelectCharacter} className="ripper capitalize">
+            wizard
+          </button>
+          <button value={'odlaw'} onClick={handleSelectCharacter} className="ripper capitalize">
+            odlaw
+          </button>
         </div>
       </article>
     </section>
