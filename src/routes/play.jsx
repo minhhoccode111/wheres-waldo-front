@@ -16,6 +16,9 @@ export default function Play() {
   const [gameId] = useState(uuid());
   const [startTime] = useState(new Date().getTime());
 
+  // whether popup show
+  const [isPopup, setIsPopup] = useState(false);
+
   // position of cursor over Playground
   const playgroundRef = useRef(null);
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -31,7 +34,10 @@ export default function Play() {
       const percentFromLeft = Math.floor((pxFromLeft / e.target.width) * 100);
       const percentFromTop = Math.floor((pxFromTop / e.target.height) * 100);
 
-      setPosition(() => ({ x: percentFromLeft, y: percentFromTop }));
+      setPosition({ x: percentFromLeft, y: percentFromTop });
+
+      // reverse each click on playground
+      setIsPopup((current) => !current);
     }
   }, []);
 
@@ -63,9 +69,7 @@ export default function Play() {
   // waldo's head 61% - 37%
 
   useEffect(() => {
-    if (playgroundRef.current) {
-      //
-    }
+    //
   }, []);
 
   return (
@@ -92,9 +96,7 @@ export default function Play() {
         <div
           // have to use inline style because arbitrary dynamic position don't work in tailwind
           style={{ top: position.y + '%', left: position.x + '%' }}
-          className={
-            'flex flex-col gap-2 rounded-lg h-36 w-24 absolute z-10 bg-danger p-2 capitalize font-bold -translate-x-1/2 -translate-y-1/2 transition-transform origin-center hover:scale-y-100 scale-y-50'
-          }
+          className={'flex-col gap-2 rounded-lg h-36 w-24 absolute z-10 bg-danger p-2 capitalize font-bold' + (isPopup ? ' flex' : ' hidden')}
         >
           <p className="text-center text-white">Select:</p>
           <button className="ripper capitalize">waldo</button>
