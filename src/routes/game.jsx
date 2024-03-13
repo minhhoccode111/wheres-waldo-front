@@ -18,7 +18,8 @@ export default function Game() {
 
   // create each new game
   const [gameId] = useState(uuid());
-  const [startTime] = useState(new Date().getTime());
+	// must use Unix time
+  const [startTime] = useState(Date.now());
   const [timePlay, setTimePlay] = useState(0);
 
   // whether popup show
@@ -89,10 +90,10 @@ export default function Game() {
       method: 'put',
       url: import.meta.env.VITE_API_ORIGIN + '/game',
       data: {
-        startTime,
+        time: Date.now(),
         gameId,
         position,
-        name: e.target.value,
+        charname: e.target.value,
       },
     });
     return;
@@ -104,16 +105,18 @@ export default function Game() {
         method: 'post',
         url: import.meta.env.VITE_API_ORIGIN + '/game',
         data: {
-          startTime,
+          time: Date.now(),
           gameId,
           position,
-          name: e.target.value,
+          charname: e.target.value,
         },
       });
     } catch (err) {
       // setMessage('Some errors')
     }
   }
+
+	// TODO add form submit handler
 
   return (
     <section className="">
@@ -150,7 +153,7 @@ export default function Game() {
                 className="peer border-none bg-transparent placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 px-2 py-1 sm:px-3 sm:py-1.5 md:px-4 md:py-2 sm:text-lg"
                 placeholder="Search for..."
                 type="text"
-                name="q"
+                name="username"
               />
 
               <span className="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-white p-0.5 text-xs text-gray-700 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:-top-1 peer-focus:text-xs peer-focus:sm:text-sm">
@@ -165,7 +168,7 @@ export default function Game() {
         </div>
       )}
 
-      {/* gameboard min width 1000px so user can see */}
+      {/* gameboard */}
       <article className="aspect-16/9 bg-link border-link border-8 rounded-3xl relative">
         <img ref={playgroundRef} src={Playground} alt="Many people at the beach" className="block w-full cursor-crosshair rounded-xl" />
         <div
