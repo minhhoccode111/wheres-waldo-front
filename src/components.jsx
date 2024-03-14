@@ -48,22 +48,14 @@ export function GameResult({ score }) {
     <li className="grid grid-cols-5 gap-2 items-center">
       <p className="">{score.name}</p>
       <div className="text-xs text-center place-self-center">
-        <p className="">{score.startTimeFormatted.split('-')[1]}</p>
-        <p className="">{score.startTimeFormatted.split('-')[0]}</p>
+        <p className="">{score?.startTimeFormatted?.split('-')[1]}</p>
+        <p className="">{score?.startTimeFormatted?.split('-')[0]}</p>
       </div>
       <p className="place-self-center">{isNaN(firstFound) ? '_' : firstFound}</p>
       <p className="place-self-center">{isNaN(secondFound) ? '_' : secondFound}</p>
       <p className="place-self-end">{isNaN(endTime) ? '_' : endTime}</p>
     </li>
   );
-}
-
-export function Dropdown({ position }) {
-  return <></>;
-}
-
-export function DropdownButton({ name }) {
-  return <></>;
 }
 
 export function Timer({ startTime, timePlayed }) {
@@ -102,7 +94,7 @@ export function Timer({ startTime, timePlayed }) {
 
 export function Footer() {
   return (
-    <footer className="p-4 grid place-items-center">
+    <footer className="p-8 grid place-items-center">
       <p className="">
         <a href="https://github.com/minhhoccode111/wheres-waldo-front" target="_blank" rel="noopener" className="text-link underline decoration-dotted hover:decoration-solid">
           This
@@ -231,4 +223,9 @@ Character.propTypes = {
 
 GameResult.propTypes = {
   score: PropTypes.object.isRequired,
+};
+
+Timer.propTypes = {
+  startTime: PropTypes.number.isRequired,
+  timePlayed: PropTypes.number.isRequired,
 };

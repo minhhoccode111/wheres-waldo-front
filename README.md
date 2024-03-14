@@ -42,6 +42,7 @@ npm start
 
 - Some animations
 - Light, dark themes
+- Search, sort scores
 
 ## **Navigation**
 

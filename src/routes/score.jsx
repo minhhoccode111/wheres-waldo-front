@@ -56,6 +56,22 @@ export default function Blog() {
     };
   }, []);
 
+  const [isCleared, setIsCleared] = useState(false);
+
+  // clear bloated plays
+  async function handleClear() {
+    try {
+      await axios({
+        method: 'delete',
+        url: import.meta.env.VITE_API_ORIGIN + '/game',
+      });
+
+      setIsCleared(true);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   let jsx;
 
   // there server error or connection error when fetching scores
@@ -75,19 +91,33 @@ export default function Blog() {
     // data available
   } else {
     jsx = (
-      <ul className="flex flex-col gap-4 w-full max-w-[70ch] bg-link p-4 rounded-lg shadow-lg">
-        <li className="grid grid-cols-5 gap-2">
-          <p className="place-self-start">Player</p>
-          <p className="place-self-center">Played at</p>
-          <p className="place-self-center">1st found(s)</p>
-          <p className="place-self-center">2nd found(s)</p>
-          <p className="place-self-end">Time played(s)</p>
-        </li>
-        {/* {reduceState.scores.map((score) => ( */}
-        {scoreData?.map((score) => (
-          <GameResult score={score} key={score.id} />
-        ))}
-      </ul>
+      <>
+        <div className="flex items-center justify-evenly gap-4">
+          <p className="">Plays: {scoreData?.length}</p>
+          <div className="">
+            {isCleared ? (
+              <p className="">Cleared!</p>
+            ) : (
+              <button onClick={handleClear} className="">
+                Clear bloated
+              </button>
+            )}
+          </div>
+        </div>
+        <ul className="flex flex-col gap-8 p-6 rounded-lg shadow-2xl text-slate-900">
+          <li className="grid grid-cols-5 gap-2 font-bold text-link">
+            <p className="place-self-start">Player</p>
+            <p className="place-self-center">Played at</p>
+            <p className="place-self-center">1st found(s)</p>
+            <p className="place-self-center">2nd found(s)</p>
+            <p className="place-self-end">Time played(s)</p>
+          </li>
+          {/* {reduceState.scores.map((score) => ( */}
+          {scoreData?.map((score) => (
+            <GameResult score={score} key={score.id} />
+          ))}
+        </ul>
+      </>
     );
   }
 
@@ -148,14 +178,15 @@ export default function Blog() {
       </div>
 
       {/* display each score in scores and its link to navigate to view */}
-      <div className="p-2 sm:p-4 w-full max-w-[70ch] mx-auto my-8 rounded-lg">
-        {jsx}
-
-        {/* create new score field */}
-      </div>
+      <div className="max-w-[70ch] mx-auto my-8">{jsx}</div>
 
       {/* a scroll to top button */}
-      <div className={'fixed right-2 bottom-2 z-10' + ' ' + (isSticky ? 'block' : 'hidden')}>
+      <div
+        className={
+          'fixed right-2 bottom-2 z-10 block'
+          // + ' ' + (isSticky ? 'block' : 'hidden')
+        }
+      >
         <button
           onClick={() => {
             // scroll to top
