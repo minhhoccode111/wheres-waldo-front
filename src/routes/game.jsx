@@ -16,11 +16,33 @@ export default function Game() {
   // navigate after submit user's name
   const navigate = useNavigate();
 
-  // create each new game
+  // create each new game, never change so no need for set function
   const [gameId] = useState(uuid());
-	// must use Unix time
   const [startTime] = useState(Date.now());
   const [timePlay, setTimePlay] = useState(0);
+
+  // create new game when this component render
+  useEffect(() => {
+    async function tmp() {
+      try {
+        const res = await axios({
+          method: 'post',
+          url: import.meta.env.VITE_API_ORIGIN + '/game',
+          data: {
+            startTime, // mark starting time
+            gameId, // mark uniqueness of this game
+          },
+        });
+
+        // console.log(res.data);
+      } catch (err) {
+        setMessage('Server error create new game!');
+      }
+    }
+
+    // fetch axios to mark this game starting time and uuid
+    tmp();
+  }, [startTime, gameId]);
 
   // whether popup show
   const [isPopup, setIsPopup] = useState(false);
@@ -31,6 +53,8 @@ export default function Game() {
   // position of cursor over Playground
   const playgroundRef = useRef(null);
   const [position, setPosition] = useState({ x: 0, y: 0 });
+
+  // handle position change and toggle popup when click play ground
   useEffect(() => {
     if (playgroundRef.current) playgroundRef.current.addEventListener('click', handleClick);
 
@@ -45,9 +69,9 @@ export default function Game() {
 
       setPosition({ x: percentFromLeft, y: percentFromTop });
 
-      setIsPopup(true);
+      setIsPopup(!isPopup);
     }
-  }, []);
+  }, [isPopup]);
 
   // default 3 characters
   const [characters, setCharacters] = useState([
@@ -56,53 +80,20 @@ export default function Game() {
     CharacterFac('odlaw', Odlaw),
   ]);
 
-  useEffect(() => {
-    async function tmp() {
-      try {
-        const res = await axios({
-          method: 'post',
-          url: import.meta.env.VITE_API_ORIGIN + '/game',
-          data: {
-            startTime, // mark starting time
-            gameId, // mark uniqueness of this game
-          },
-        });
-
-        console.log(res);
-      } catch (err) {
-        // setMessage('Some errors')
-      }
-    }
-
-    // fetch axios to mark this game starting time and uuid
-    // tmp();
-  }, [startTime, gameId]);
-
   // odlaw's head 10% - 35%
   // wizard's head 26% - 34%
   // waldo's head 61% - 37%
 
   async function handleSelectCharacter(e) {
+    // hide to stop user from spamming
     setIsPopup(false);
 
     // console.log(e.target.textContent);
-    console.log({
-      method: 'put',
-      url: import.meta.env.VITE_API_ORIGIN + '/game',
-      data: {
-        time: Date.now(),
-        gameId,
-        position,
-        charname: e.target.value,
-      },
-    });
-    return;
-
-    // hide to stop user from spamming
+    // return
 
     try {
       const res = await axios({
-        method: 'post',
+        method: 'put',
         url: import.meta.env.VITE_API_ORIGIN + '/game',
         data: {
           time: Date.now(),
@@ -111,12 +102,40 @@ export default function Game() {
           charname: e.target.value,
         },
       });
+
+      // match on server
+      setCharacters((characters) =>
+        characters.map((char) => {
+          if (char.name === res.data.charname) {
+            return {
+              ...char,
+              // mark found
+              found: true,
+              // replace name with second to find that char
+              name: (res.data.time - startTime) / 1000,
+            };
+          }
+          // else keep the same
+          else return char;
+        })
+      );
     } catch (err) {
-      // setMessage('Some errors')
+      setMessage('Position does not match!');
     }
   }
 
-	// TODO add form submit handler
+  // handle username submit
+  async function handleUsernameSubmit(e) {
+    e.preventDefault();
+
+    try {
+      //
+    } catch (err) {
+      //
+    } finally {
+      //
+    }
+  }
 
   return (
     <section className="">
@@ -134,16 +153,18 @@ export default function Game() {
 
         <div className="">{message}</div>
 
+        {/* display characters in header */}
         {characters.map((char, i) => (
           <Character char={char} key={i} />
         ))}
       </header>
 
+      {/* display form when every character is found */}
       {characters.every((c) => c.found) && (
         <div className="fixed z-50 top-0 left-0 h-full w-full bg-[#77777799] flex flex-col gap-4 justify-center items-center">
           <h2 className="text-4xl font-bold text-white">You win!</h2>
           <h2 className="text-4xl font-bold text-white">Enter Your Name</h2>
-          <form className="p-4 rounded-lg bg-white flex gap-2 items-center justify-between">
+          <form onSubmit={handleUsernameSubmit} className="p-4 rounded-lg bg-white flex gap-2 items-center justify-between">
             <label
               htmlFor="search-input"
               className="relative block rounded-md sm:rounded-lg border border-gray-200 shadow-sm focus-within:border-sky-500 focus-within:ring-1 focus-within:ring-sky-500"
@@ -177,15 +198,16 @@ export default function Game() {
           className={'flex-col gap-2 rounded-lg h-36 w-24 absolute z-10 bg-danger p-2 capitalize font-bold' + (isPopup ? ' flex' : ' hidden')}
         >
           <p className="text-center text-white">Select:</p>
-          <button value={'waldo'} onClick={handleSelectCharacter} className="ripper capitalize">
-            waldo
-          </button>
-          <button value={'wizard'} onClick={handleSelectCharacter} className="ripper capitalize">
-            wizard
-          </button>
-          <button value={'odlaw'} onClick={handleSelectCharacter} className="ripper capitalize">
-            odlaw
-          </button>
+
+          {/* 3 character buttons */}
+          {characters.map(
+            (char, index) =>
+              !char.found && (
+                <button key={index} value={char.name} onClick={handleSelectCharacter} className="ripper capitalize">
+                  {char.name}
+                </button>
+              )
+          )}
         </div>
       </article>
     </section>
