@@ -15,12 +15,12 @@ export default function Index() {
         </div>
 
         <div className="border-2 h-0 border-sky-500 relative self-stretch">
-          <Link className="ripper p-4 underline hover:decoration-2 underline-offset-4 flex items-center tracking-widest absolute right-3/4 translate-x-1/2 bottom-0 translate-y-1/2 z-10" to={'play'}>
+          <Link className="ripper p-4 underline hover:decoration-2 underline-offset-4 flex items-center tracking-widest absolute right-3/4 translate-x-1/2 bottom-0 translate-y-1/2 z-10" to={'game'}>
             <span className="text-xl font-bold whitespace-nowrap">Find me</span>
           </Link>
 
           <Link className="ripper p-4 underline hover:decoration-2 underline-offset-4 flex items-center tracking-widest absolute right-1/4 translate-x-1/2 bottom-0 translate-y-1/2 z-10" to={'score'}>
-            <span className="text-xl font-bold whitespace-nowrap">Scores</span>
+            <span className="text-xl font-bold whitespace-nowrap">Score</span>
           </Link>
         </div>
       </div>

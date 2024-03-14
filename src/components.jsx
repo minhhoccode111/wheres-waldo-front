@@ -59,9 +59,6 @@ export function Timer({ startTime, timePlay }) {
   // reference of setInterval
   const intervalRef = useRef(null);
 
-  // if endTime exists stop watch
-  if (timePlay) return <div className="font-bold text-xl p-4">Timer: {timePlay}s</div>;
-
   // millisec / frame = milliseconds that need when a frame re-new
   const frame = 1000 / 60;
 
@@ -74,7 +71,12 @@ export function Timer({ startTime, timePlay }) {
   }
 
   // call start when render
-  useEffect(() => start(), []);
+  useEffect(() => {
+    if (!timePlay) start();
+  }, []);
+
+  // if endTime exists stop watch
+  if (timePlay) return <div className="font-bold text-xl p-4">Timer: {timePlay}s</div>;
 
   // calculate to seconds
   return <div className="font-bold text-xl p-4">Timer: {(now - startTime) / 1000}</div>;
