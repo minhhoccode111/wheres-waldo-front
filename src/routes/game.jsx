@@ -83,7 +83,7 @@ export default function Game() {
 
   // default 3 characters
   const [characters, setCharacters] = useState([
-    CharacterFac('waldo', Waldo), // create default object character
+    CharacterFac('waldo', Waldo), // create default object characters
     CharacterFac('wizard', Wizard),
     CharacterFac('odlaw', Odlaw),
   ]);
@@ -142,13 +142,24 @@ export default function Game() {
   // handle username submit
   async function handleUsernameSubmit(e) {
     e.preventDefault();
+    const input = e.target.querySelector('#username');
 
     try {
-      //
+      await axios({
+        method: 'put',
+        url: import.meta.env.VITE_API_ORIGIN + '/game',
+        data: {
+          gameId,
+          username: input.value,
+        },
+      });
+
+      input.value = '';
+
+      setMessage(`Result saved!`);
+      navigate('/score');
     } catch (err) {
-      //
-    } finally {
-      //
+      setMessage(`Error saving result!`);
     }
   }
 
@@ -180,12 +191,9 @@ export default function Game() {
           <h2 className="text-4xl font-bold text-white">You win!</h2>
           <h2 className="text-4xl font-bold text-white">Enter Your Name</h2>
           <form onSubmit={handleUsernameSubmit} className="p-4 rounded-lg bg-white flex gap-2 items-center justify-between">
-            <label
-              htmlFor="search-input"
-              className="relative block rounded-md sm:rounded-lg border border-gray-200 shadow-sm focus-within:border-sky-500 focus-within:ring-1 focus-within:ring-sky-500"
-            >
+            <label htmlFor="username" className="relative block rounded-md sm:rounded-lg border border-gray-200 shadow-sm focus-within:border-sky-500 focus-within:ring-1 focus-within:ring-sky-500">
               <input
-                id="search-input"
+                id="username"
                 className="peer border-none bg-transparent placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 px-2 py-1 sm:px-3 sm:py-1.5 md:px-4 md:py-2 sm:text-lg"
                 placeholder="Search for..."
                 type="text"
