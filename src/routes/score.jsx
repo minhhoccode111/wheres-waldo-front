@@ -2,62 +2,45 @@ import { useEffect, useReducer, useState } from 'react';
 import { RiArrowUpDoubleLine } from 'react-icons/ri';
 import { matchSorter } from 'match-sorter';
 import axios from 'axios';
-import { Loading, Error } from './../components';
+import { Loading, Error, GameResult } from './../components';
+
+// custom hook to fetch score data
+function useScoreData() {
+  const [scoreData, setScoreData] = useState(null);
+  const [isError, setIsError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    async function tmp() {
+      try {
+        setIsLoading(true);
+
+        const res = await axios({
+          method: 'get',
+          url: import.meta.env.VITE_API_ORIGIN + '/game',
+        });
+
+        console.log(res.data.games);
+        setScoreData(res.data.games);
+      } catch (error) {
+        setIsError(true);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    tmp();
+  }, []);
+
+  return { scoreData, isError, isLoading };
+}
 
 export default function Blog() {
   // sticky search header
   const [isSticky, setIsSticky] = useState(false);
 
-  //
-  const [isErrorScores, setIsErrorScores] = useState(false);
-  const [isLoadingScores, setIsLoadingScores] = useState(false);
+  const { scoreData, isError, isLoading } = useScoreData();
 
-  // search, sort and filter scores on inputs change
-  const [reduceState, dispatch] = useReducer(reducer, { scores: [] });
-
-  // to keep reduceState in sync when scores fetched, because when we first assign scores to reduceState it's an empty array
-  useEffect(() => {
-    dispatch({ type: 'load' });
-  }, []);
-
-  // filter and sort the scores, we don't need state because we use scores state every time
-  function reducer(state, action) {
-    // TODO: implement reducer with tags like: frontend, backend, api, os, math, dsa, etc.
-    const type = action.type;
-    if (type === 'load') {
-      return { scores: [...state.scores] };
-    } else if (type === 'az') {
-      // we have to clone scores because we don't want to use reducer's own `state`
-      return { scores: [...state.scores].sort((a, b) => (a.title.toLowerCase() > b.title.toLowerCase() ? 1 : -1)) };
-    } else if (type === 'za') {
-      return { scores: [...state.scores].sort((a, b) => (a.title.toLowerCase() > b.title.toLowerCase() ? -1 : 1)) };
-    } else if (type === 'newest') {
-      return { scores: [...state.scores].sort((a, b) => b.createdAtUnix - a.createdAtUnix) };
-    } else if (type === 'oldest') {
-      return { scores: [...state.scores].sort((a, b) => a.createdAtUnix - b.createdAtUnix) };
-    } else if (type === 'search') {
-      return {
-        scores: matchSorter([...state.scores], action.query, {
-          keys: [
-            'title',
-            // 'tag', // TODO search tags
-          ],
-        }),
-      };
-    } else {
-      throw new Error(`Unknown action: `, type);
-    }
-  }
-
-  function handleSortChange(e) {
-    dispatch({ type: e.target.value });
-  }
-
-  function handleSearchChange(e) {
-    dispatch({ type: 'search', query: e.target.value });
-  }
-
-  // BUG remove sticky header because it trigger rerender, or do some performant consideration when this whole Blog component rerender with that sticky bar
   // make search bar stick to the top when start scrolling
   useEffect(() => {
     const stickSearch = document.getElementById('stick-search');
@@ -76,14 +59,14 @@ export default function Blog() {
   let jsx;
 
   // there server error or connection error when fetching scores
-  if (isErrorScores) {
+  if (isError) {
     jsx = (
       <div className="mx-auto grid place-items-center text-warn">
         <Error className="text-8xl" />
       </div>
     );
     // is fetching
-  } else if (isLoadingScores) {
+  } else if (isLoading) {
     jsx = (
       <div className="mx-auto grid place-items-center text-warn">
         <Loading className="text-8xl" />
@@ -93,11 +76,9 @@ export default function Blog() {
   } else {
     jsx = (
       <ul className="">
-        {/* {scores.map((score) => ( */}
-        {reduceState.scores.map((score) => (
-          <li className="p-4 my-8 shadow-lg text-gray-900 rounded-md bg-white" key={score.id}>
-            {/* display score here */}
-          </li>
+        {/* {reduceState.scores.map((score) => ( */}
+        {scoreData?.map((score) => (
+          <GameResult key={score.id} />
         ))}
       </ul>
     );
@@ -125,7 +106,7 @@ export default function Blog() {
               placeholder="Search for..."
               type="search"
               name="q"
-              onChange={handleSearchChange}
+              // onChange={handleSearchChange}
             />
 
             <span className="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-white p-0.5 text-xs text-gray-700 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:-top-1 peer-focus:text-xs peer-focus:sm:text-sm">
@@ -143,7 +124,7 @@ export default function Blog() {
                 Sort{' '}
               </label>
               <select
-                onChange={handleSortChange}
+                // onChange={handleSortChange}
                 name="sort"
                 id="sort-by"
                 defaultValue="newest"
