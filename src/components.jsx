@@ -1,7 +1,7 @@
 import { AiOutlineLoading } from 'react-icons/ai';
 import { IoIosCloseCircleOutline, IoIosMenu } from 'react-icons/io';
 import { RiSignalWifiErrorFill } from 'react-icons/ri';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
@@ -52,7 +52,7 @@ export function DropdownButton({ name }) {
   return <></>;
 }
 
-export function Timer({ startTime, timePlay }) {
+export function Timer({ startTime, timePlayed }) {
   // current unix time
   const [now, setNow] = useState(0);
 
@@ -63,20 +63,24 @@ export function Timer({ startTime, timePlay }) {
   const frame = 1000 / 60;
 
   // call this when Timer start rendering
-  function start() {
-    intervalRef.current = setInterval(() => {
-      // set current unix time after each frame time
-      setNow(Date.now());
-    }, frame);
-  }
+  const start = useCallback(
+    function start() {
+      intervalRef.current = setInterval(() => {
+        // set current unix time after each frame time
+        setNow(Date.now());
+      }, frame);
+    },
+    [frame]
+  );
 
   // call start when render
   useEffect(() => {
-    if (!timePlay) start();
-  }, []);
+    if (timePlayed === 0) start();
+    else clearInterval(intervalRef.current);
+  }, [timePlayed, start]);
 
   // if endTime exists stop watch
-  if (timePlay) return <div className="font-bold text-xl p-4">Timer: {timePlay}s</div>;
+  if (timePlayed) return <div className="font-bold text-xl p-4">Timer: {timePlayed}ms</div>;
 
   // calculate to seconds
   return <div className="font-bold text-xl p-4">Timer: {(now - startTime) / 1000}</div>;
@@ -168,9 +172,9 @@ export function Header() {
         {/* link to about section */}
         <NavLink
           className={({ isActive }) => (isActive ? 'bg-sky-400 text-white' : 'hover:bg-gray-300 hover:text-black') + ' ' + 'max-sm:p-4 p-2 max-sm:rounded-xl rounded-md transition-all'}
-          to={'play'}
+          to={'game'}
         >
-          Play
+          Game
         </NavLink>
 
         <NavLink
@@ -205,4 +209,8 @@ RipperLink.propTypes = {
 RipperButton.propTypes = {
   children: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
   onClick: PropTypes.func.isRequired,
+};
+
+Character.propTypes = {
+  char: PropTypes.object.isRequired,
 };

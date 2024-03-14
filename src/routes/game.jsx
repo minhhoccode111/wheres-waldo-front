@@ -19,13 +19,13 @@ export default function Game() {
   // create each new game, never change so no need for set function
   const [gameId] = useState(uuid());
   const [startTime] = useState(Date.now());
-  const [timePlay, setTimePlay] = useState(0);
+  const [timePlayed, setTimePlayed] = useState(0);
 
   // create new game when this component render
   useEffect(() => {
     async function tmp() {
       try {
-        const res = await axios({
+        await axios({
           method: 'post',
           url: import.meta.env.VITE_API_ORIGIN + '/game',
           data: {
@@ -35,6 +35,7 @@ export default function Game() {
         });
 
         // console.log(res.data);
+        setMessage('Game created!');
       } catch (err) {
         setMessage('Server error create new game!');
       }
@@ -49,6 +50,13 @@ export default function Game() {
 
   // a message to display to user
   const [message, setMessage] = useState('');
+
+  // only display message for 3 second
+  useEffect(() => {
+    setTimeout(() => {
+      setMessage('');
+    }, 3000);
+  }, [message]);
 
   // position of cursor over Playground
   const playgroundRef = useRef(null);
@@ -103,7 +111,7 @@ export default function Game() {
         },
       });
 
-      // match on server
+      // display match
       setCharacters((characters) =>
         characters.map((char) => {
           if (char.name === res.data.charname) {
@@ -119,6 +127,13 @@ export default function Game() {
           else return char;
         })
       );
+
+      const count = characters.filter((char) => char.found).length;
+      // because next render it will be 3
+      if (count === 2) setTimePlayed(res.data.time - startTime);
+
+      // display message
+      setMessage('Found!');
     } catch (err) {
       setMessage('Position does not match!');
     }
@@ -143,7 +158,7 @@ export default function Game() {
       <header className="flex gap-2 justify-between items-center p-3">
         <div className="flex-1">
           {/* counter */}
-          <Timer startTime={startTime} timePlay={timePlay} />
+          <Timer startTime={startTime} timePlayed={timePlayed} />
 
           {/* display click position */}
           <div className="p-4 font-bold text-lg">
@@ -151,7 +166,7 @@ export default function Game() {
           </div>
         </div>
 
-        <div className="">{message}</div>
+        <div className="font-bold text-danger text-xl">{message}</div>
 
         {/* display characters in header */}
         {characters.map((char, i) => (
@@ -195,7 +210,7 @@ export default function Game() {
         <div
           // have to use inline style because arbitrary dynamic position don't work in tailwind
           style={{ top: position.y + '%', left: position.x + '%' }}
-          className={'flex-col gap-2 rounded-lg h-36 w-24 absolute z-10 bg-danger p-2 capitalize font-bold' + (isPopup ? ' flex' : ' hidden')}
+          className={'flex-col gap-2 rounded-lg w-24 absolute z-10 bg-danger p-2 capitalize font-bold' + (isPopup ? ' flex' : ' hidden')}
         >
           <p className="text-center text-white">Select:</p>
 

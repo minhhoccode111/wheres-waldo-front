@@ -12,7 +12,11 @@ The **Where's Waldo Front** is created according to the assignment from **The Od
 
 - Handle loading and error data fetching states properly
 - Fully responsive
-<!-- - Beautiful UI ^^ -->
+  <!-- - Beautiful UI ^^ -->
+  Quick note:
+- odlaw x: 10% - y: 35%
+- wizard x: 26% - y: 34%
+- waldo x: 61% - y: 37%
 
 ## **Outcome**
 
