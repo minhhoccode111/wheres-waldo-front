@@ -40,8 +40,22 @@ export function Character({ char }) {
   );
 }
 
-export function GameResult({ name, firstFound, secondFound, playTime, playedAt, afk }) {
-  return <></>;
+export function GameResult({ score }) {
+  const firstFound = (new Date(score.firstFound).getTime() - score?.startTimeUnix) / 1000;
+  const secondFound = (new Date(score.secondFound).getTime() - score?.startTimeUnix) / 1000;
+  const endTime = (new Date(score.endTime).getTime() - score?.startTimeUnix) / 1000;
+  return (
+    <li className="grid grid-cols-5 gap-2 items-center">
+      <p className="">{score.name}</p>
+      <div className="text-xs text-center place-self-center">
+        <p className="">{score.startTimeFormatted.split('-')[1]}</p>
+        <p className="">{score.startTimeFormatted.split('-')[0]}</p>
+      </div>
+      <p className="place-self-center">{isNaN(firstFound) ? '_' : firstFound}</p>
+      <p className="place-self-center">{isNaN(secondFound) ? '_' : secondFound}</p>
+      <p className="place-self-end">{isNaN(endTime) ? '_' : endTime}</p>
+    </li>
+  );
 }
 
 export function Dropdown({ position }) {
@@ -213,4 +227,8 @@ RipperButton.propTypes = {
 
 Character.propTypes = {
   char: PropTypes.object.isRequired,
+};
+
+GameResult.propTypes = {
+  score: PropTypes.object.isRequired,
 };

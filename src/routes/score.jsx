@@ -1,6 +1,6 @@
-import { useEffect, useReducer, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { RiArrowUpDoubleLine } from 'react-icons/ri';
-import { matchSorter } from 'match-sorter';
+// import { matchSorter } from 'match-sorter';
 import axios from 'axios';
 import { Loading, Error, GameResult } from './../components';
 
@@ -75,10 +75,17 @@ export default function Blog() {
     // data available
   } else {
     jsx = (
-      <ul className="">
+      <ul className="flex flex-col gap-4 w-full max-w-[70ch] bg-link p-4 rounded-lg shadow-lg">
+        <li className="grid grid-cols-5 gap-2">
+          <p className="place-self-start">Player</p>
+          <p className="place-self-center">Played at</p>
+          <p className="place-self-center">1st found(s)</p>
+          <p className="place-self-center">2nd found(s)</p>
+          <p className="place-self-end">Time played(s)</p>
+        </li>
         {/* {reduceState.scores.map((score) => ( */}
         {scoreData?.map((score) => (
-          <GameResult key={score.id} />
+          <GameResult score={score} key={score.id} />
         ))}
       </ul>
     );
@@ -127,13 +134,13 @@ export default function Blog() {
                 // onChange={handleSortChange}
                 name="sort"
                 id="sort-by"
-                defaultValue="newest"
+                defaultValue="fastest"
                 className="mt-1.5 w-full rounded-lg border-gray-300 text-gray-700 sm:text-sm md:text-base px-2 py-1 sm:px-3 sm:py-1.5 bg-white border shadow-sm focus-within:border-sky-500 focus-within:ring-1 focus-within:ring-sky-500 "
               >
+                <option value="fastest">Fastest</option>
+                <option value="slowest">Slowest</option>
                 <option value="newest">Newest</option>
                 <option value="oldest">Oldest</option>
-                <option value="az">A-Z</option>
-                <option value="za">Z-A</option>
               </select>
             </div>
           </div>

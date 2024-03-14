@@ -5,7 +5,8 @@ import './styles/index.css';
 import './styles/app.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
-    <Router />
-  </React.StrictMode>
+  // BUG this cause double fetch
+  // <React.StrictMode>
+  <Router />
+  // </React.StrictMode>
 );

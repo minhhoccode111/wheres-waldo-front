@@ -198,6 +198,8 @@ export default function Game() {
                 placeholder="Search for..."
                 type="text"
                 name="username"
+                minLength={1}
+                maxLength={20}
               />
 
               <span className="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-white p-0.5 text-xs text-gray-700 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:-top-1 peer-focus:text-xs peer-focus:sm:text-sm">
