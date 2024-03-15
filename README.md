@@ -1,12 +1,12 @@
-# Where's Waldo Front
+# Where's Waldo Frontend
 
 The **Where's Waldo Front** is created according to the assignment from **The Odin Project** [course](https://www.theodinproject.com/lessons/nodejs-where-s-waldo-a-photo-tagging-app)
 <br>
 <br>
 
-![Preview](public/)
+## 🔗 **Live demo** of the project is [here](https://whereswaldotop.vercel.app/).
 
-### 🔗 **Live preview** of the project is [here](https://minhhoccode.vercel.app/).
+## 🔗 **API hosting** of the project is [here](https://whereswaldotop.glitch.me/).
 
 ## **Features**
 
@@ -42,7 +42,7 @@ npm start
 
 - Some animations
 - Light, dark themes
-- Search, sort scores
+- Search, sort score board
 
 ## **Navigation**
 
@@ -53,3 +53,14 @@ npm start
 * See this project backend [Where's Waldo Back](https://github.com/minhhoccode111/wheres-waldo-back)
 
 <!-- * See my next project []() -->
+
+## **Project preview**
+
+Home
+![Preview](public/waldo-home.png)
+
+Game play
+![Preview](public/waldo-game.png)
+
+Score board
+![Preview](public/waldo-score.png)
