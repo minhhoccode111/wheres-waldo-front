@@ -53,7 +53,7 @@ export function GameResult({ score }) {
       </div>
       <p className="place-self-center">{isNaN(firstFound) ? '_' : firstFound}</p>
       <p className="place-self-center">{isNaN(secondFound) ? '_' : secondFound}</p>
-      <p className="place-self-end">{isNaN(endTime) ? '_' : endTime}</p>
+      <p className="self-center justify-self-end">{isNaN(endTime) ? '_' : endTime}</p>
     </li>
   );
 }

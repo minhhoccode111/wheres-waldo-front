@@ -53,9 +53,11 @@ export default function Game() {
 
   // only display message for 3 second
   useEffect(() => {
-    setTimeout(() => {
-      setMessage('');
-    }, 3000);
+    if (message) {
+      setTimeout(() => {
+        setMessage('');
+      }, 4000);
+    }
   }, [message]);
 
   // position of cursor over Playground
@@ -177,8 +179,6 @@ export default function Game() {
           </div>
         </div>
 
-        <div className="font-bold text-danger text-xl">{message}</div>
-
         {/* display characters in header */}
         {characters.map((char, i) => (
           <Character char={char} key={i} />
@@ -217,6 +217,18 @@ export default function Game() {
       {/* gameboard */}
       <article className="aspect-16/9 bg-link border-link border-8 rounded-3xl relative">
         <img ref={playgroundRef} src={Playground} alt="Many people at the beach" className="block w-full cursor-crosshair rounded-xl" />
+
+        {/* display messages about game state */}
+        <div
+          className={
+            'font-bold text-black text-3xl fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none px-4 py-2 tracking-widest whitespace-nowrap' +
+            ' ' +
+            (message ? 'block' : 'hidden')
+          }
+        >
+          {message}
+        </div>
+
         <div
           // have to use inline style because arbitrary dynamic position don't work in tailwind
           style={{ top: position.y + '%', left: position.x + '%' }}
