@@ -32,14 +32,14 @@ function useScoreData() {
     tmp();
   }, []);
 
-  return { scoreData, isError, isLoading };
+  return { scoreData, setScoreData, isError, setIsError, isLoading, setIsLoading };
 }
 
 export default function Blog() {
   // sticky search header
   const [isSticky, setIsSticky] = useState(false);
 
-  const { scoreData, isError, isLoading } = useScoreData();
+  const { scoreData, setScoreData, isError, setIsError, isLoading, setIsLoading } = useScoreData();
 
   // make search bar stick to the top when start scrolling
   useEffect(() => {
@@ -61,14 +61,25 @@ export default function Blog() {
   // clear bloated plays
   async function handleClear() {
     try {
-      await axios({
+      setIsLoading(true);
+
+      const res = await axios({
         method: 'delete',
         url: import.meta.env.VITE_API_ORIGIN + '/game',
       });
 
+      // console.log(res.data);
+
+      // delete method will send back new games array after it clear bloated ones
+      setScoreData(res.data.games);
+
+      // stop user from spamming
       setIsCleared(true);
     } catch (error) {
-      console.log(error);
+      setIsError(true);
+      // console.log(error);
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -81,36 +92,38 @@ export default function Blog() {
         <Error className="text-8xl" />
       </div>
     );
-    // is fetching
-  } else if (isLoading) {
+  }
+  // is fetching
+  else if (isLoading) {
     jsx = (
       <div className="mx-auto grid place-items-center text-warn">
         <Loading className="text-8xl" />
       </div>
     );
-    // data available
-  } else {
+  }
+  // data available
+  else {
     jsx = (
       <>
-        <div className="flex items-center justify-evenly gap-4">
+        <div className="flex items-center justify-evenly gap-4 text-slate-900 font-bold p-8">
           <p className="">Plays: {scoreData?.length}</p>
           <div className="">
             {isCleared ? (
-              <p className="">Cleared!</p>
+              <p className="text-success">Cleared!</p>
             ) : (
-              <button onClick={handleClear} className="">
-                Clear bloated
+              <button onClick={handleClear} className="text-link underline decoration-dotted underline-offset-4 hover:decoration-solid">
+                Clear NaN
               </button>
             )}
           </div>
         </div>
         <ul className="flex flex-col gap-8 p-6 rounded-lg shadow-2xl text-slate-900">
-          <li className="grid grid-cols-5 gap-2 font-bold text-link">
+          <li className="grid grid-cols-5 gap-2 font-bold text-warn">
             <p className="place-self-start">Player</p>
             <p className="place-self-center">Played at</p>
             <p className="place-self-center">1st found(s)</p>
             <p className="place-self-center">2nd found(s)</p>
-            <p className="place-self-end">Time played(s)</p>
+            <p className="place-self-end text-danger">Time played(s)</p>
           </li>
           {/* {reduceState.scores.map((score) => ( */}
           {scoreData?.map((score) => (
