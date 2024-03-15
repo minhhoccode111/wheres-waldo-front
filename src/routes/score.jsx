@@ -119,11 +119,11 @@ export default function Blog() {
         </div>
         <ul className="flex flex-col gap-8 p-6 rounded-lg shadow-2xl text-slate-900">
           <li className="grid grid-cols-5 gap-2 font-bold text-warn">
-            <p className="place-self-start">Player</p>
+            <p className="place-self-start self-center">Player</p>
             <p className="place-self-center">Played at</p>
-            <p className="place-self-center">1st found(s)</p>
-            <p className="place-self-center">2nd found(s)</p>
-            <p className="place-self-end text-danger">Time played(s)</p>
+            <p className="place-self-center">1st found (s)</p>
+            <p className="place-self-center">2nd found (s)</p>
+            <p className="place-self-end text-danger">Total (s)</p>
           </li>
           {/* {reduceState.scores.map((score) => ( */}
           {scoreData?.map((score) => (
