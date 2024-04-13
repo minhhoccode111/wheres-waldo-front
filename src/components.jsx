@@ -143,7 +143,7 @@ export function Header() {
         'flex gap-3 sm:gap-5 md:gap-7 lg:gap-9 items-center p-4 sm:p-5 md:p-6 lg:p-7 shadow-lg shadow-gray-300 text-slate-700 bg-white'
         // + ' ' +  (pathname !== '/' && 'bg-slate-50')
       }
-      // color base on url path
+    // color base on url path
     >
       {/* hamburger button */}
       <nav className={'sm:hidden'}>

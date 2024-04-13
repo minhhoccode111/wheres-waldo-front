@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useReducer, memo } from 'react';
 import { RiArrowUpDoubleLine } from 'react-icons/ri';
 // import { matchSorter } from 'match-sorter';
 import axios from 'axios';
@@ -20,7 +20,7 @@ function useScoreData() {
           url: import.meta.env.VITE_API_ORIGIN + '/game',
         });
 
-        console.log(res.data.games);
+        // console.log(res.data.games);
         setScoreData(res.data.games);
       } catch (error) {
         setIsError(true);
@@ -35,11 +35,42 @@ function useScoreData() {
   return { scoreData, setScoreData, isError, setIsError, isLoading, setIsLoading };
 }
 
-export default function Blog() {
+// export default function Blog() {
+const Blog = memo(function Blog() {
   // sticky search header
   const [isSticky, setIsSticky] = useState(false);
 
   const { scoreData, setScoreData, isError, setIsError, isLoading, setIsLoading } = useScoreData();
+
+  console.log(`the scoreData belike: `, scoreData)
+
+  const reducer = (_, value) => {
+    if (value === 'fastest') {
+      return [...scoreData.sort((a, b) => a.playTime - b.playTime)]
+    }
+
+    if (value === 'slowest') {
+      return [...scoreData.sort((a, b) => b.playTime - a.playTime)]
+    }
+
+    if (value === 'newest') {
+      return [...scoreData.sort((a, b) => b.startTimeUnix - a.startTimeUnix)]
+    }
+
+    if (value === 'oldest') {
+      return [...scoreData.sort((a, b) => a.startTimeUnix - b.startTimeUnix)]
+    }
+
+    // if (value === 'init') {
+    //   return [...scoreData]
+    // }
+
+    throw new Error(`Unknown value.`)
+  }
+
+  let [state, dispatch] = useReducer(reducer, scoreData)
+
+  state = state ?? scoreData ?? [] // it's just weird
 
   // make search bar stick to the top when start scrolling
   useEffect(() => {
@@ -106,7 +137,7 @@ export default function Blog() {
     jsx = (
       <>
         <div className="flex items-center justify-evenly gap-4 text-slate-900 font-bold p-8">
-          <p className="">Plays: {scoreData?.length}</p>
+          <p className="">Plays: {state?.length}</p>
           <div className="">
             {isCleared ? (
               <p className="text-success">Cleared!</p>
@@ -125,8 +156,7 @@ export default function Blog() {
             <p className="place-self-center">2nd found (s)</p>
             <p className="place-self-end text-danger">Total (s)</p>
           </li>
-          {/* {reduceState.scores.map((score) => ( */}
-          {scoreData?.map((score) => (
+          {state?.map((score) => (
             <GameResult score={score} key={score.id} />
           ))}
         </ul>
@@ -156,7 +186,7 @@ export default function Blog() {
               placeholder="Search for..."
               type="search"
               name="q"
-              // onChange={handleSearchChange}
+            // onChange={handleSearchChange}
             />
 
             <span className="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-white p-0.5 text-xs text-gray-700 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:-top-1 peer-focus:text-xs peer-focus:sm:text-sm">
@@ -174,11 +204,11 @@ export default function Blog() {
                 Sort{' '}
               </label>
               <select
-                // onChange={handleSortChange}
                 name="sort"
                 id="sort-by"
                 defaultValue="fastest"
                 className="mt-1.5 w-full rounded-lg border-gray-300 text-gray-700 sm:text-sm md:text-base px-2 py-1 sm:px-3 sm:py-1.5 bg-white border shadow-sm focus-within:border-sky-500 focus-within:ring-1 focus-within:ring-sky-500 "
+                onChange={e => dispatch(e.target.value)}
               >
                 <option value="fastest">Fastest</option>
                 <option value="slowest">Slowest</option>
@@ -213,4 +243,6 @@ export default function Blog() {
       </div>
     </section>
   );
-}
+})
+
+export default Blog
