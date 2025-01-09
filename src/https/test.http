@@ -1,0 +1,18 @@
+@url = {{VITE_API_ORIGIN}}
+
+###
+GET {{url}}/game
+
+###
+POST {{url}}/game
+
+{
+    "startTime": "",
+    "gameId": ""
+}
+
+###
+PUT {{url}}/game
+
+###
+DELETE {{url}}/game

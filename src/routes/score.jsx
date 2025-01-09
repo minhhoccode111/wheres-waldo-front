@@ -1,78 +1,39 @@
 import { useEffect, useState, useReducer, memo } from 'react';
 import { RiArrowUpDoubleLine } from 'react-icons/ri';
-// import { matchSorter } from 'match-sorter';
 import axios from 'axios';
 import { Loading, Error, GameResult } from './../components';
+import { useOutletContext } from 'react-router-dom';
 
-// custom hook to fetch score data
-function useScoreData() {
-  const [scoreData, setScoreData] = useState(null);
-  const [isError, setIsError] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    async function tmp() {
-      try {
-        setIsLoading(true);
-
-        const res = await axios({
-          method: 'get',
-          url: import.meta.env.VITE_API_ORIGIN + '/game',
-        });
-
-        // console.log(res.data.games);
-        setScoreData(res.data.games);
-      } catch (error) {
-        setIsError(true);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    tmp();
-  }, []);
-
-  return { scoreData, setScoreData, isError, setIsError, isLoading, setIsLoading };
-}
-
-// export default function Blog() {
-const Blog = memo(function Blog() {
-  // sticky search header
+const Score = memo(function Score() {
   const [isSticky, setIsSticky] = useState(false);
+  const { scoreData, setScoreData } = useOutletContext();
 
-  const { scoreData, setScoreData, isError, setIsError, isLoading, setIsLoading } = useScoreData();
-
-  console.log(`the scoreData belike: `, scoreData)
+  // console.log(`the scoreData belike: `, scoreData);
 
   const reducer = (_, value) => {
     if (value === 'fastest') {
-      return [...scoreData.sort((a, b) => a.playTime - b.playTime)]
+      return [...scoreData.sort((a, b) => a.playTime - b.playTime)];
     }
 
     if (value === 'slowest') {
-      return [...scoreData.sort((a, b) => b.playTime - a.playTime)]
+      return [...scoreData.sort((a, b) => b.playTime - a.playTime)];
     }
 
     if (value === 'newest') {
-      return [...scoreData.sort((a, b) => b.startTimeUnix - a.startTimeUnix)]
+      return [...scoreData.sort((a, b) => b.startTimeUnix - a.startTimeUnix)];
     }
 
     if (value === 'oldest') {
-      return [...scoreData.sort((a, b) => a.startTimeUnix - b.startTimeUnix)]
+      return [...scoreData.sort((a, b) => a.startTimeUnix - b.startTimeUnix)];
     }
 
-    // if (value === 'init') {
-    //   return [...scoreData]
-    // }
+    throw new Error(`Unknown value.`);
+  };
 
-    throw new Error(`Unknown value.`)
-  }
+  let [state, dispatch] = useReducer(reducer, scoreData);
 
-  let [state, dispatch] = useReducer(reducer, scoreData)
+  state = state ?? scoreData ?? [];
 
-  state = state ?? scoreData ?? [] // it's just weird
-
-  // make search bar stick to the top when start scrolling
   useEffect(() => {
     const stickSearch = document.getElementById('stick-search');
     const sticky = stickSearch?.offsetTop;
@@ -81,59 +42,38 @@ const Blog = memo(function Blog() {
       if (window.scrollY > sticky) setIsSticky(true);
       else setIsSticky(false);
     };
+
     window.addEventListener('scroll', handleScroll);
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
+
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const [isCleared, setIsCleared] = useState(false);
 
-  // clear bloated plays
   async function handleClear() {
     try {
-      setIsLoading(true);
-
       const res = await axios({
         method: 'delete',
         url: import.meta.env.VITE_API_ORIGIN + '/game',
       });
 
-      // console.log(res.data);
-
-      // delete method will send back new games array after it clear bloated ones
       setScoreData(res.data.games);
 
-      // stop user from spamming
       setIsCleared(true);
     } catch (error) {
-      setIsError(true);
-      // console.log(error);
-    } finally {
-      setIsLoading(false);
+      console.log(`error belike: `, error);
     }
   }
 
   let jsx;
 
-  // there server error or connection error when fetching scores
-  if (isError) {
-    jsx = (
-      <div className="mx-auto grid place-items-center text-warn">
-        <Error className="text-8xl" />
-      </div>
-    );
-  }
-  // is fetching
-  else if (isLoading) {
+  if (!scoreData) {
     jsx = (
       <div className="mx-auto grid place-items-center text-warn">
         <Loading className="text-8xl" />
       </div>
     );
-  }
-  // data available
-  else {
+  } else {
     jsx = (
       <>
         <div className="flex items-center justify-evenly gap-4 text-slate-900 font-bold p-8">
@@ -142,7 +82,10 @@ const Blog = memo(function Blog() {
             {isCleared ? (
               <p className="text-success">Cleared!</p>
             ) : (
-              <button onClick={handleClear} className="text-link underline decoration-dotted underline-offset-4 hover:decoration-solid">
+              <button
+                onClick={handleClear}
+                className="text-link underline decoration-dotted underline-offset-4 hover:decoration-solid"
+              >
                 Clear NaN
               </button>
             )}
@@ -166,27 +109,33 @@ const Blog = memo(function Blog() {
 
   return (
     <section className="">
-      {/* padding element so that the header don't seem like teleport when it sticky to top */}
-      <div className={'text-transparent px-8 py-4 border' + ' ' + (isSticky ? '' : 'hidden')}>Made with by minhhoccode111</div>
+      <div
+        className={
+          'text-transparent px-8 py-4 border' + ' ' + (isSticky ? '' : 'hidden')
+        }
+      >
+        Made by minhhoccode111
+      </div>
       <div
         id="stick-search"
         className={
-          'flex gap-2 sm:gap-3 md:gap-4 items-end justify-center md:justify-end transition-all px-4 py-2 sm:px-8 sm:py-4 bg-white' + ' ' + (isSticky ? 'fixed top-0 left-0 right-0 z-20 shadow-xl' : '')
+          'flex gap-2 sm:gap-3 md:gap-4 items-end justify-center md:justify-end transition-all px-4 py-2 sm:px-8 sm:py-4 bg-white' +
+          ' ' +
+          (isSticky ? 'fixed top-0 left-0 right-0 z-20 shadow-xl' : '')
         }
       >
-        {/* divider */}
         <div className="hidden md:block border-b-8 border-sky-500 flex-1 scale-x-150 origin-right"></div>
-
-        {/* search field */}
         <div className="max-sm:w-1/3">
-          <label htmlFor="search-input" className="relative block rounded-md sm:rounded-lg border border-gray-200 shadow-sm focus-within:border-sky-500 focus-within:ring-1 focus-within:ring-sky-500">
+          <label
+            htmlFor="search-input"
+            className="relative block rounded-md sm:rounded-lg border border-gray-200 shadow-sm focus-within:border-sky-500 focus-within:ring-1 focus-within:ring-sky-500"
+          >
             <input
               id="search-input"
               className="peer border-none bg-transparent placeholder-transparent focus:border-transparent focus:outline-none focus:ring-0 px-2 py-1 sm:px-3 sm:py-1.5 md:px-4 md:py-2 sm:text-lg"
               placeholder="Search for..."
               type="search"
               name="q"
-            // onChange={handleSearchChange}
             />
 
             <span className="pointer-events-none absolute start-2.5 top-0 -translate-y-1/2 bg-white p-0.5 text-xs text-gray-700 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-sm peer-focus:-top-1 peer-focus:text-xs peer-focus:sm:text-sm">
@@ -195,11 +144,13 @@ const Blog = memo(function Blog() {
           </label>
         </div>
 
-        {/* filter category */}
         <div className="">
           <div className="flex gap-2 sm:gap-3 md:gap-4">
             <div className="">
-              <label htmlFor="sort-by" className="block text-sm font-medium text-gray-900">
+              <label
+                htmlFor="sort-by"
+                className="block text-sm font-medium text-gray-900"
+              >
                 {' '}
                 Sort{' '}
               </label>
@@ -208,7 +159,7 @@ const Blog = memo(function Blog() {
                 id="sort-by"
                 defaultValue="fastest"
                 className="mt-1.5 w-full rounded-lg border-gray-300 text-gray-700 sm:text-sm md:text-base px-2 py-1 sm:px-3 sm:py-1.5 bg-white border shadow-sm focus-within:border-sky-500 focus-within:ring-1 focus-within:ring-sky-500 "
-                onChange={e => dispatch(e.target.value)}
+                onChange={(e) => dispatch(e.target.value)}
               >
                 <option value="fastest">Fastest</option>
                 <option value="slowest">Slowest</option>
@@ -220,19 +171,11 @@ const Blog = memo(function Blog() {
         </div>
       </div>
 
-      {/* display each score in scores and its link to navigate to view */}
       <div className="max-w-[70ch] mx-auto my-8">{jsx}</div>
 
-      {/* a scroll to top button */}
-      <div
-        className={
-          'fixed right-2 bottom-2 z-10 block'
-          // + ' ' + (isSticky ? 'block' : 'hidden')
-        }
-      >
+      <div className={'fixed right-2 bottom-2 z-10 block'}>
         <button
           onClick={() => {
-            // scroll to top
             document.body.scrollTop = 0;
             document.documentElement.scrollTop = 0;
           }}
@@ -243,6 +186,6 @@ const Blog = memo(function Blog() {
       </div>
     </section>
   );
-})
+});
 
-export default Blog
+export default Score;

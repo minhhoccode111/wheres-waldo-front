@@ -7,7 +7,6 @@ import Game from './game';
 import About from './about';
 
 export default function Router() {
-  // setting router
   const router = createBrowserRouter([
     {
       path: '/',
@@ -17,19 +16,16 @@ export default function Router() {
         {
           index: true,
           element: <Index />,
-          errorElement: <NotFound />,
         },
 
         {
           path: 'score',
           element: <Score />,
-          errorElement: <NotFound />,
         },
 
         {
           path: 'game',
           element: <Game />,
-          errorElement: <NotFound />,
         },
 
         {
@@ -40,6 +36,5 @@ export default function Router() {
     },
   ]);
 
-  // wrapper with setting router
   return <RouterProvider router={router} />;
 }
